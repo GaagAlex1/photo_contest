@@ -46,7 +46,8 @@ async def get_available_contests(
         user: user_dependency,
         db: db_dependency
 ) -> List[ContestBase]:
-    stmt = select(Contest).filter(Contest.owner_id != user.id)
+    stmt = select(Contest).filter((Contest.owner_id != user.id) &
+                                  ~(Contest.participants.any(User.id == user.id)))
     contests: List[Contest] = (await db.execute(stmt)).scalars().all()
     return [ContestBase.from_orm(contest) for contest in contests]
 
