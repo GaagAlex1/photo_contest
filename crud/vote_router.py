@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, HTTPException, status
+from sqlalchemy import select
 from auth.router import user_dependency
 from database import db_dependency
 from models.schemas import *
@@ -18,6 +19,13 @@ async def add_photo(
         photo_id=photo_id,
         rate=rate
     )
+
+    stmt = select(Vote).filter((Vote.photo_id == photo_id) & (Vote.author_id == user.id)).exist()
+    if (await db.execute(stmt)).scalar():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Вы уже голосовали за это фото"
+        )
 
     db.add(vote)
     await db.commit()

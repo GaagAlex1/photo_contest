@@ -52,14 +52,14 @@ class CommentBase(BaseModel):
 class VoteCreateBase(BaseModel):
     photo_id: int
     author_id: int
-    rate: str
+    rate: int
 
 
 class VoteBase(BaseModel):
     id: int
     photo_id: int
     author_id: int
-    rate: str
+    rate: int
 
     class Config:
         from_attributes = True
