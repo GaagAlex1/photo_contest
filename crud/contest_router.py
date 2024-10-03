@@ -23,7 +23,7 @@ async def add_contest(
 
     return ContestBase.from_orm(contest)
 
-@contest_router.get('/get_created/')
+@contest_router.get('/created/')
 async def get_created_contests(
         user: user_dependency,
         db: db_dependency
@@ -32,7 +32,7 @@ async def get_created_contests(
     return [ContestBase.from_orm(contest) for contest in user.created_contests]
 
 
-@contest_router.get('/get_participated/')
+@contest_router.get('/participated/')
 async def get_participated_contests(
         user: user_dependency,
         db: db_dependency
@@ -40,6 +40,15 @@ async def get_participated_contests(
     user: User = await db.get(User, user.id)
     return [ContestBase.from_orm(contest) for contest in user.participated_contests]
 
+
+@contest_router.get('/available/')
+async def get_available_contests(
+        user: user_dependency,
+        db: db_dependency
+) -> List[ContestBase]:
+    stmt = select(Contest).filter(Contest.owner_id != user.id)
+    contests: List[Contest] = (await db.execute(stmt)).scalars().all()
+    return [ContestBase.from_orm(contest) for contest in contests]
 
 @contest_router.post('/join_contest/')
 async def join_contest(

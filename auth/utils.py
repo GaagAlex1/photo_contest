@@ -31,8 +31,7 @@ def decode_jwt(token: str | bytes,
 
 def hash_passwd(password: str) -> bytes:
     salt = bcrypt.gensalt()
-    passwd_bytes: bytes = password.encode()
-    return bcrypt.hashpw(passwd_bytes, salt)
+    return bcrypt.hashpw(password.encode(), salt)
 
 
 def validate_passwd(password: str,
