@@ -5,6 +5,7 @@ from auth.utils import *
 from models.orm import User
 from auth.schemas import UserCreateBase, UserBase, TokenInfo
 from database import db_dependency
+import jwt
 
 auth_router = APIRouter(prefix='/auth')
 

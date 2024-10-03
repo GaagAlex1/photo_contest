@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Body, File, UploadFile
-from sqlalchemy import select
+import uuid
 from auth.router import user_dependency
 from database import db_dependency
 from models.schemas import *
@@ -17,7 +17,10 @@ async def add_photo(
 ) -> PhotoBase:
     photo_path: str = 'photos'
     os.makedirs(photo_path, exist_ok=True)
-    file_location = os.path.join(photo_path, photo.filename)
+
+    file_extension: str = os.path.splitext(photo.filename)[1]
+    filename: str = str(uuid.uuid4()) + file_extension
+    file_location = os.path.join(photo_path, filename)
 
     with open(file_location, 'wb') as file:
         photo_content = await photo.read()
@@ -36,7 +39,6 @@ async def add_photo(
 
 @photo_router.get('/get_all/')
 async def get_all(
-        user: user_dependency,
         db: db_dependency,
         contest_id: int
 ) -> List[PhotoBase]:
